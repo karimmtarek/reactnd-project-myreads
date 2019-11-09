@@ -15,12 +15,17 @@ class BooksApp extends React.Component {
     let newBookshelf = event.target.value;
     book.shelf = newBookshelf
 
-    this.setState(prevState => {
-      let newBooksList = prevState.books
-      let bookIndex = newBooksList.findIndex((obj) => (obj.id === book.id))
-      newBooksList[bookIndex] = book
-      return { books: newBooksList }
-    });
+    BooksAPI.update(book, newBookshelf)
+      .then((res) => {
+        console.log("Book response: ", res)
+
+        this.setState(prevState => {
+          let newBooksList = prevState.books
+          let bookIndex = newBooksList.findIndex((obj) => (obj.id === book.id))
+          newBooksList[bookIndex] = book
+          return { books: newBooksList }
+        });
+      })
   }
 
   componentDidMount() {
