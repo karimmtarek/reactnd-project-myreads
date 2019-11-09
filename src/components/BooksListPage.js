@@ -2,8 +2,8 @@ import React from 'react'
 import { Component } from 'react'
 import { Link } from 'react-router-dom';
 
-
 class BooksListPage extends Component {
+
   render() {
     return (
       <div className="list-books">
