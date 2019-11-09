@@ -10,14 +10,14 @@ class Bookshelf extends Component {
     const booksFiltered = books.filter((book) => {
       return book.shelf.toLowerCase() === shelfTitleId
     })
-    console.log("booksFiltered: ", booksFiltered)
+    const changeBookshelf = this.props.changeBookshelf
     return (
       <div className="bookshelf">
         <h2 className="bookshelf-title">{shelfTitle}</h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
             {booksFiltered.map((book) => {
-              return <Book bookDetails={book} />
+              return <Book bookDetails={book} changeBookshelf={changeBookshelf} />
             })}
           </ol>
         </div>

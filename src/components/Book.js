@@ -6,6 +6,7 @@ import BookAuthors from "./BookAuthors";
 class Book extends Component {
   render() {
     const bookDetails = this.props.bookDetails
+    const changeBookshelf = this.props.changeBookshelf
     return (
       <li>
         <div className="book">
@@ -18,7 +19,7 @@ class Book extends Component {
                      backgroundImage:`url(${bookDetails.imageLinks.smallThumbnail})` }
                  }>
             </div>
-            <BookshelfChanger />
+            <BookshelfChanger book={bookDetails} changeBookshelf={changeBookshelf}  />
           </div>
           <div className="book-title">{bookDetails.title}</div>
           <BookAuthors authors={bookDetails.authors} />

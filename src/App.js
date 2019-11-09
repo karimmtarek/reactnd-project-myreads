@@ -10,6 +10,19 @@ class BooksApp extends React.Component {
     books: []
   }
 
+  changeBookshelf = (book, event) => {
+
+    let newBookshelf = event.target.value;
+    book.shelf = newBookshelf
+
+    this.setState(prevState => {
+      let newBooksList = prevState.books
+      let bookIndex = newBooksList.findIndex((obj) => (obj.id === book.id))
+      newBooksList[bookIndex] = book
+      return { books: newBooksList }
+    });
+  }
+
   componentDidMount() {
     BooksAPI.getAll()
       .then((books) => {
@@ -23,7 +36,7 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         <Route exact path='/' render={() => (
-          <BooksListPage books={this.state.books}/>
+          <BooksListPage books={this.state.books} changeBookshelf={this.changeBookshelf}/>
         )} />
         <Route exact path='/search' render={({ history }) => (
           <SearchPage/>
