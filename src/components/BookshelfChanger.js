@@ -25,19 +25,14 @@ class BookshelfChanger extends Component {
     ]
     return (
       <div className="book-shelf-changer">
-        <select onChange={(event) => (changeBookshelf(book, event))}>
+        <select
+          onChange={(event) => (changeBookshelf(book, event))}
+          value={book.shelf || 'none'}
+        >
           <option value="move" disabled>Move to...</option>
           {
-            selectOptions.map((option) => {
-              if (book.shelf === option.value) {
-                console.log("book.title: ", book.title)
-                console.log("{book.shelf: ", book.shelf)
-                console.log("option.value: ", option.value)
-                console.log("=====")
-                return <option value={option.value} selected>{option.label}</option>
-              } else {
-                return <option value={option.value}>{option.label}</option>
-              }
+            selectOptions.map((option, index) => {
+              return <option value={option.value} key={index}>{option.label}</option>
             })
           }
         </select>

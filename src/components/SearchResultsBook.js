@@ -1,14 +1,20 @@
 import { Component } from 'react'
 import React from 'react'
-import BookshelfChanger from "./BookshelfChanger";
 import BookAuthors from "./BookAuthors";
+import BookshelfChanger from "./BookshelfChanger";
 
-class Book extends Component {
+class SearchResultsBook extends Component {
   render() {
     const bookDetails = this.props.bookDetails
     const changeBookshelf = this.props.changeBookshelf
+    const backgroundImage = (book) => {
+      if (book.imageLinks) {
+        return book.imageLinks.smallThumbnail
+      }
+      return ""
+    }
     return (
-      <li className='class-name'>
+      <li key={bookDetails.id}>
         <div className="book">
           <div className="book-top">
             <div className="book-cover"
@@ -16,7 +22,9 @@ class Book extends Component {
                  {
                    width: 128,
                    height: 193,
-                   backgroundImage:`url(${bookDetails.imageLinks.smallThumbnail})` }
+                   backgroundImage: `url(${backgroundImage(bookDetails)})`,
+                   backgroundColor: '#ccc'
+                 }
                }>
             </div>
             <BookshelfChanger book={bookDetails} changeBookshelf={changeBookshelf}  />
@@ -29,4 +37,4 @@ class Book extends Component {
   }
 }
 
-export default Book
+export default SearchResultsBook

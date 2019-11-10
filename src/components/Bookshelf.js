@@ -17,7 +17,7 @@ class Bookshelf extends Component {
         <div className="bookshelf-books">
           <ol className="books-grid">
             {booksFiltered.map((book) => {
-              return <Book bookDetails={book} changeBookshelf={changeBookshelf} />
+              return <Book bookDetails={book} key={book.id} changeBookshelf={changeBookshelf} />
             })}
           </ol>
         </div>

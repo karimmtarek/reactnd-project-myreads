@@ -3,12 +3,12 @@ import React from 'react'
 
 class BookAuthors extends Component {
   render() {
-    const authors = this.props.authors
+    const authors = this.props.authors || []
 
     return (
       <div className="book-authors">
         <ul>
-          {authors.map((author) => (<li>{author}</li>))}
+          {authors.map((author, index) => (<li key={index}>{author}</li>))}
         </ul>
       </div>
     )
