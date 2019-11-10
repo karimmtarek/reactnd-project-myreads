@@ -24,7 +24,6 @@ class BooksApp extends React.Component {
     if (query.length >= 1) {
       BooksAPI.search(query)
         .then((res) => {
-          console.log("BookAPI search response: ", res)
           if (res.error) {
             this.setState({
               searchResults: [],
@@ -51,7 +50,6 @@ class BooksApp extends React.Component {
 
     BooksAPI.update(book, newBookshelf)
       .then((res) => {
-        console.log("Update shelf response: ", res)
         this.setState(prevState => {
           let updatedBooksList = prevState.books
           let bookIndex = updatedBooksList.findIndex((obj) => (obj.id === book.id))
@@ -77,16 +75,13 @@ class BooksApp extends React.Component {
     BooksAPI.getAll()
       .then((books) => {
         Object.keys(bookshelfs).forEach((key) => {
-          console.log("Key: ", key)
           books.map((book) => {
-            console.log("bookshelf: ", book.shelf)
             if (book.shelf === key) {
               bookshelfs[key].push(book.id)
             }
           })
         }
       )
-        console.log("bookshelfs: ", bookshelfs)
         this.setState({
           books: books,
           bookshelfs: bookshelfs
@@ -97,9 +92,7 @@ class BooksApp extends React.Component {
   }
 
   render() {
-    const { books, searchResults, searchQuery } = this.state
-    console.log("🔥 books: ", books)
-    console.log("🔥 searchQuery: ", searchQuery)
+    const { books, searchResults, searchQuery, bookshelfs } = this.state
     return (
       <div className="app">
         <Route exact path='/' render={() => (
@@ -110,6 +103,7 @@ class BooksApp extends React.Component {
         )} />
         <Route exact path='/search' render={({ history }) => (
           <SearchPage
+            bookshelfs={bookshelfs}
             searchResults={searchResults}
             searchQuery={searchQuery}
             updateSearchQuery={this.updateSearchQuery}

@@ -4,7 +4,16 @@ import {Link} from "react-router-dom";
 import SearchResultsBook from "./SearchResultsBook";
 
 class SearchPage extends Component {
+  getBookshelfName = (book, bookshelfs) => {
+    Object.keys(bookshelfs).some((key) => {
+      if (bookshelfs[key].indexOf(book.id) >= 0) { book.shelf = key }
+      return bookshelfs[key].indexOf(book.id) >= 0
+    })
+    return book
+  }
+
   render() {
+    const bookshelfs = this.props.bookshelfs
     const searchResults = this.props.searchResults
     const updateSearchQuery = this.props.updateSearchQuery
     const searchQuery = this.props.searchQuery
@@ -36,7 +45,10 @@ class SearchPage extends Component {
           <ol className="books-grid">
             {
               searchResults.map((book, index) => {
-                return <SearchResultsBook key={index} bookDetails={book} changeBookshelf={changeBookshelf} />
+                return <SearchResultsBook
+                  key={index}
+                  bookDetails={this.getBookshelfName(book, bookshelfs)}
+                  changeBookshelf={changeBookshelf} />
               })
             }
           </ol>

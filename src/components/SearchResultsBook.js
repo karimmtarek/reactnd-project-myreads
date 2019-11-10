@@ -14,7 +14,7 @@ class SearchResultsBook extends Component {
       return ""
     }
     return (
-      <li key={bookDetails.id}>
+      <li>
         <div className="book">
           <div className="book-top">
             <div className="book-cover"
@@ -27,7 +27,10 @@ class SearchResultsBook extends Component {
                  }
                }>
             </div>
-            <BookshelfChanger book={bookDetails} changeBookshelf={changeBookshelf}  />
+            <BookshelfChanger
+              book={bookDetails}
+              changeBookshelf={changeBookshelf}
+            />
           </div>
           <div className="book-title">{bookDetails.title}</div>
           <BookAuthors authors={bookDetails.authors} />
