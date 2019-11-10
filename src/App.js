@@ -7,6 +7,11 @@ import BooksListPage from "./components/BooksListPage";
 
 class BooksApp extends React.Component {
   state = {
+    bookshelfs: {
+      currentlyReading: [],
+      wantToRead: [],
+      read: []
+    },
     books: [],
     searchResults: [],
     searchQuery: ''
@@ -14,6 +19,7 @@ class BooksApp extends React.Component {
 
   updateSearchQuery = (query) => {
     console.log("query: ", query)
+    console.log("query length: ", query.length)
 
     if (query.length >= 1) {
       BooksAPI.search(query)
@@ -59,22 +65,41 @@ class BooksApp extends React.Component {
 
           return {
             books: updatedBooksList,
-            searchResults: updatedSearchResults
+            searchResults: updatedSearchResults,
+            bookshelfs: res
           }
         });
       })
   }
 
   componentDidMount() {
+    let bookshelfs = this.state.bookshelfs
     BooksAPI.getAll()
       .then((books) => {
-        this.setState({books})
+        Object.keys(bookshelfs).forEach((key) => {
+          console.log("Key: ", key)
+          books.map((book) => {
+            console.log("bookshelf: ", book.shelf)
+            if (book.shelf === key) {
+              bookshelfs[key].push(book.id)
+            }
+          })
+        }
+      )
+        console.log("bookshelfs: ", bookshelfs)
+        this.setState({
+          books: books,
+          bookshelfs: bookshelfs
+        })
       })
+    // }
+
   }
 
   render() {
     const { books, searchResults, searchQuery } = this.state
     console.log("🔥 books: ", books)
+    console.log("🔥 searchQuery: ", searchQuery)
     return (
       <div className="app">
         <Route exact path='/' render={() => (

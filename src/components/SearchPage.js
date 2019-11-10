@@ -34,9 +34,11 @@ class SearchPage extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {searchResults.map((book, index) => {
-              return <SearchResultsBook key={index} bookDetails={book} changeBookshelf={changeBookshelf} />
-            })}
+            {
+              searchResults.map((book, index) => {
+                return <SearchResultsBook key={index} bookDetails={book} changeBookshelf={changeBookshelf} />
+              })
+            }
           </ol>
         </div>
       </div>
