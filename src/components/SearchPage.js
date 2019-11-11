@@ -4,24 +4,22 @@ import {Link} from "react-router-dom";
 import SearchResultsBook from "./SearchResultsBook";
 
 class SearchPage extends Component {
-  getBookshelfName = (book, bookshelfs) => {
-    Object.keys(bookshelfs).some((key) => {
-      if (bookshelfs[key].indexOf(book.id) >= 0) { book.shelf = key }
-      return bookshelfs[key].indexOf(book.id) >= 0
-    })
-    return book
+  state = {
+    query: ''
   }
 
   render() {
-    const bookshelfs = this.props.bookshelfs
     const searchResults = this.props.searchResults
     const updateSearchQuery = this.props.updateSearchQuery
-    const searchQuery = this.props.searchQuery
     const changeBookshelf = this.props.changeBookshelf
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <Link to='/' className="close-search">Close</Link>
+          <Link
+            to='/'
+            onClick={this.props.resetSearch}
+            className="close-search"
+          >Close</Link>
           <div className="search-books-input-wrapper">
             {/*
                   NOTES: The search from BooksAPI is limited to a particular set of search terms.
@@ -35,8 +33,11 @@ class SearchPage extends Component {
               className="search-books"
               type="text"
               placeholder="Search by title or author"
-              value={searchQuery}
-              onChange={(event) => updateSearchQuery(event.target.value)}
+              value={this.state.query}
+              onChange={(event) => {
+                this.setState({query: event.target.value})
+                updateSearchQuery(event.target.value)
+              }}
             />
 
           </div>
@@ -47,7 +48,7 @@ class SearchPage extends Component {
               searchResults.map((book, index) => {
                 return <SearchResultsBook
                   key={index}
-                  bookDetails={this.getBookshelfName(book, bookshelfs)}
+                  bookDetails={book}
                   changeBookshelf={changeBookshelf} />
               })
             }

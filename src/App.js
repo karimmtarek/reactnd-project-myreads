@@ -14,52 +14,76 @@ class BooksApp extends React.Component {
     },
     books: [],
     searchResults: [],
-    searchQuery: ''
+  }
+
+  createInitialBookshelfs = (bookshelfs, books) => {
+    books.map((book) => { return bookshelfs[book.shelf].push(book.id) })
+    this.setState({bookshelfs: bookshelfs})
+    return bookshelfs
+  }
+
+  booksWithShelf = (books) => {
+    const bookshelfs = this.state.bookshelfs
+    return books.map((book) => {
+      Object.keys(bookshelfs).some((key) => {
+        if (bookshelfs[key].indexOf(book.id) >= 0) {
+          book.shelf = key
+        } else {
+          book.shelf = 'none'
+        }
+        return bookshelfs[key].indexOf(book.id) >= 0
+      })
+      return book
+    })
   }
 
   updateSearchQuery = (query) => {
-    console.log("query: ", query)
-    console.log("query length: ", query.length)
-
     if (query.length >= 1) {
       BooksAPI.search(query)
         .then((res) => {
           if (res.error) {
             this.setState({
-              searchResults: [],
-              searchQuery: query
+              searchResults: []
             })
           } else {
             this.setState({
-              searchResults: res,
-              searchQuery: query
+              searchResults: this.booksWithShelf(res)
             })
           }
         })
     } else {
       this.setState({
-        searchResults: [],
-        searchQuery: ''
+        searchResults: []
       })
     }
   }
 
+  resetSearch = () => {
+    this.setState({searchResults: []})
+  }
+
   changeBookshelf = (book, event) => {
-    let newBookshelf = event.target.value;
+    let newBookshelf = event.target.value
+    book.prevShelf = Object.assign(book.shelf).toString()
     book.shelf = newBookshelf
 
     BooksAPI.update(book, newBookshelf)
       .then((res) => {
         this.setState(prevState => {
           let updatedBooksList = prevState.books
-          let bookIndex = updatedBooksList.findIndex((obj) => (obj.id === book.id))
-
           let updatedSearchResults = prevState.searchResults
-          let bookResultIndex = updatedSearchResults.findIndex((obj) => (obj.id === book.id))
 
-          updatedBooksList.splice(bookIndex, 1)
+          if (updatedSearchResults.length > 0) {
+            let bookResultIndex = updatedSearchResults.findIndex((obj) => (obj.id === book.id))
+            updatedSearchResults.splice(bookResultIndex, 1)
+          }
+
+          if (book.prevShelf !== 'none') {
+            let bookIndex = updatedBooksList.findIndex((obj) => (obj.id === book.id))
+            updatedBooksList.splice(bookIndex, 1)
+          }
+
           updatedBooksList.push(book)
-          updatedSearchResults.splice(bookResultIndex, 1)
 
           return {
             books: updatedBooksList,
@@ -74,30 +98,19 @@ class BooksApp extends React.Component {
     let bookshelfs = this.state.bookshelfs
     BooksAPI.getAll()
       .then((books) => {
-        Object.keys(bookshelfs).forEach((key) => {
-          books.map((book) => {
-            if (book.shelf === key) {
-              bookshelfs[key].push(book.id)
-            }
-          })
-        }
-      )
-        this.setState({
-          books: books,
-          bookshelfs: bookshelfs
-        })
+        bookshelfs = this.createInitialBookshelfs(bookshelfs, books)
+        this.setState({books: books})
       })
-    // }
-
   }
 
   render() {
     const { books, searchResults, searchQuery, bookshelfs } = this.state
+
     return (
       <div className="app">
         <Route exact path='/' render={() => (
           <BooksListPage
-            books={this.state.books}
+            books={books}
             changeBookshelf={this.changeBookshelf}
           />
         )} />
@@ -108,6 +121,7 @@ class BooksApp extends React.Component {
             searchQuery={searchQuery}
             updateSearchQuery={this.updateSearchQuery}
             changeBookshelf={this.changeBookshelf}
+            resetSearch={this.resetSearch}
           />
         )} />
         </div>
