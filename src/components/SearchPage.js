@@ -1,45 +1,83 @@
 import React from 'react'
 import {Component} from 'react'
 import {Link} from "react-router-dom";
+import {DebounceInput} from 'react-debounce-input'
 import SearchResultsBook from "./SearchResultsBook";
+import * as BooksAPI from "../BooksAPI";
 
 class SearchPage extends Component {
   state = {
-    query: ''
+    query: '',
+    searchResults: [],
+    bookshelfs: this.props.bookshelfs
+  }
+
+  booksWithShelf = (books) => {
+    const bookshelfs = this.state.bookshelfs
+    return books.map((book) => {
+      Object.keys(bookshelfs).some((key) => {
+        if (bookshelfs[key].indexOf(book.id) >= 0) {
+          book.shelf = key
+        } else {
+          book.shelf = 'none'
+        }
+        return bookshelfs[key].indexOf(book.id) >= 0
+      })
+      return book
+    })
+  }
+
+  setSearchTerm = (query) => {
+    this.setState({ query: query })
+    this.updateSearchQuery(query)
+  }
+
+  updateSearchQuery = (query) => {
+    if (query.length >= 1) {
+      BooksAPI.search(query)
+        .then((res) => {
+          if (res.error) {
+            this.setState({
+              searchResults: []
+            })
+          } else {
+            this.setState({
+              searchResults: this.booksWithShelf(res)
+            })
+          }
+        })
+    } else {
+      this.setState({
+        searchResults: []
+      })
+    }
+  }
+
+  resetSearch = () => {
+    this.setState({searchResults: []})
   }
 
   render() {
-    const searchResults = this.props.searchResults
-    const updateSearchQuery = this.props.updateSearchQuery
+    const searchResults = this.state.searchResults
     const changeBookshelf = this.props.changeBookshelf
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
           <Link
             to='/'
-            onClick={this.props.resetSearch}
+            onClick={this.resetSearch}
             className="close-search"
           >Close</Link>
           <div className="search-books-input-wrapper">
-            {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-            <input
+            <DebounceInput
               className="search-books"
-              type="text"
               placeholder="Search by title or author"
               value={this.state.query}
-              onChange={(event) => {
-                this.setState({query: event.target.value})
-                updateSearchQuery(event.target.value)
-              }}
+              minLength={2}
+              debounceTimeout={400}
+              onChange={(event) => { this.setSearchTerm(event.target.value) }}
             />
-
           </div>
         </div>
         <div className="search-books-results">
